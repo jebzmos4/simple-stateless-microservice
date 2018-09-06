@@ -1,0 +1,143 @@
+openapi: 3.0.0
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/JMorife/GlobalSMPPAPI/1.0.0
+info:
+  description: This is an API for authenticating and thumbnail generator
+  version: "1.0.0"
+  title: HackerBay User Service
+  contact:
+    email: jebzmos4@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+paths:
+
+    /:
+    get:
+      summary: API default Endpoint
+      operationId: default endpoint
+      description: |
+        This gets the default welcome message
+      responses:
+        '200':
+          description: Welcome to the Hackerbay API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendMessageResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /login:
+    post:
+      summary: authenticate a user
+      operationId: validate user credentials
+      description: |
+        By passing a username and password to send as a POST body, the API would send a message.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+        description: Post Body
+      responses:
+        '200':
+          description: User successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendMessageResponse'
+        '401':
+          description: Missing argument or parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /image:
+    post:
+      summary: generate a thumbnai;
+      operationId: validate token and compress image
+      description: |
+        By passing an image response user is validated and a thumbnail is genrated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+        description: Post Body
+      responses:
+        '200':
+          description: Thumbnail generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendMessageResponse'
+        '401':
+          description: Missing argument or parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+components:
+  schemas:
+    Message:
+      required:
+        - params
+      properties:
+        username:
+          type: string
+          example: jebzmos4
+        password:
+          type: string
+          example: morifeoluwa
+      type: object
+    GenericAPIResponse:
+      required:
+        - code
+        - message
+        - error
+      properties:
+        error:
+          type: boolean
+          default: false
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    SendMessageResponse:
+      allOf:
+      - $ref: "#/components/schemas/GenericAPIResponse"
+    Error:
+      required:
+        - code
+        - message
+        - error
+      properties:
+        error:
+          type: boolean
+          default: true
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
