@@ -6,7 +6,6 @@ const chai = require('chai');
 const should = require('should');
 const chaiHttp = require('chai-http');
 const server = require('../app/index');
-const { describe, it } = require('mocha');
 
 chai.use(chaiHttp);
 // chai.use(should);

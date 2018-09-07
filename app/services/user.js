@@ -42,9 +42,9 @@ class User {
     });
   }
 
-  async downloadImage(options) {
+  downloadImage(options) {
     this.logger.info('Downloading image');
-    await download.image(options)
+    download.image(options)
       .then(({ filename }) => {
         this.logger.info('File successfully saved as', filename);
         resizeImg(fs.readFileSync(filename), { width: 50, height: 50 }).then((buf) => {
