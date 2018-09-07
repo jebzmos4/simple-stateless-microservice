@@ -3,6 +3,9 @@ Hackerbay User Service API
 
 The hackerbay User Service API has Endpoints that authenticates a user with JWT and compresses an image to generate a thumbnail.
 ----------
+Docker Image Link
+----------
+`https://hub.docker.com/r/moriagape/hackerbay-api/`
 
 Clone repository and run npm install to setup dependencies
 
