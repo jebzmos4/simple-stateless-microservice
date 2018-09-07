@@ -41,8 +41,8 @@ npm run test
 
 ## Routes
 
-NAME     					| END POINT
---------------------------- | ---------------------------
-Base     					| /
-Authenticate User    	    | /login
-generate thumbnail          | /image
+NAME     					| END POINT     |  PARAMS
+--------------------------- | ------------- | ----------
+Base     					| /             |
+Authenticate User    	    | /login        |`username`&`password` e.g {username: 'xyz', password: '123'}
+generate thumbnail          | /image        | image url `?url=https://preview.ibb.co/moSBCz/image.png`
