@@ -3,10 +3,13 @@ process.env.NODE_ENV = 'test';
 
 // Require the dev-dependencies
 const chai = require('chai');
+const should = require('should');
 const chaiHttp = require('chai-http');
 const server = require('../app/index');
+const { describe, it } = require('mocha');
 
 chai.use(chaiHttp);
+// chai.use(should);
 const testImage = '?url=https://preview.ibb.co/moSBCz/Did_You_Know_Health_2.png';
 // Our parent block
 describe('Endpoint Tests', () => {
@@ -18,7 +21,7 @@ describe('Endpoint Tests', () => {
       chai.request(server)
         .get('/')
         .end((err, res) => {
-          res.should.have.status(200);
+          res.status.should.be.equal(200);
           done();
         });
     });
@@ -30,7 +33,23 @@ describe('Endpoint Tests', () => {
         .post('/login')
         .send('')
         .end((err, res) => {
-          res.should.have.status(401);
+          res.status.should.be.equal(401);
+          should(res.body).have.property('message', 'Please provide the username and password as a body param');
+          done();
+        });
+    });
+
+    it('it should not accept invalid parameters', (done) => {
+      const credentials = {
+        name: 'jebzmos4',
+        key: '123456'
+      };
+      chai.request(server)
+        .post('/login')
+        .send(credentials)
+        .end((err, res) => {
+          res.status.should.be.equal(400);
+          should(res.body).have.property('message', 'Invalid params passed! only *username* and *password* is allowed');
           done();
         });
     });
@@ -44,21 +63,21 @@ describe('Endpoint Tests', () => {
         .post('/login')
         .send(credentials)
         .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('object');
+          res.status.should.be.equal(200);
+          should(res.body).have.property('message', 'User successfully authenticated');
           done();
         });
     });
   });
 
-  // describe('/POST thumbnail', () => {
-  //   it('it should generate thumbnail', (done) => {
-  //     chai.request(server)
-  //       .get('/image')
-  //       .end((err, res) => {
-  //         res.should.have.status(200);
-  //         done();
-  //       });
-  //   });
-  // });
+  describe('/POST thumbnail', () => {
+    it('it should generate thumbnail', (done) => {
+      chai.request(server)
+        .post(`/image${testImage}`)
+        .end((err, res) => {
+          res.status.should.be.equal(200);
+          done();
+        });
+    });
+  });
 });
