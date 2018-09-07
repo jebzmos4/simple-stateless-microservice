@@ -4,9 +4,9 @@
  */
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const download = require('image-downloader');
 const fs = require('fs');
 const resizeImg = require('resize-img');
+const download = require('image-downloader');
 
 const config = require('../config/settings');
 
@@ -42,6 +42,20 @@ class User {
     });
   }
 
+  async downloadImage(options) {
+    this.logger.info('Downloading image');
+    await download.image(options)
+      .then(({ filename }) => {
+        this.logger.info('File successfully saved as', filename);
+        resizeImg(fs.readFileSync(filename), { width: 50, height: 50 }).then((buf) => {
+          fs.writeFileSync(`./${filename}`, buf);
+          this.logger.info('Successfully generated thumbnail');
+        });
+      }).catch((err) => {
+        this.logger.error('error generating thumbnail', err);
+      });
+  }
+
   generateThumbnail(token, url) {
     return new Promise((resolve, reject) => {
       const data = this.validateToken(token);
@@ -52,17 +66,12 @@ class User {
         if (imageExtension === '.bmp' || imageExtension === '.jpg' || imageExtension === '.png') {
           const options = {
             url,
-            dest: './images'
+            dest: './thumbnails'
           };
-          download.image(options)
-            .then(({ filename }) => {
-              this.logger.info('File successfully saved as', filename);
-              resizeImg(fs.readFileSync(filename), { width: 50, height: 50 }).then((buf) => {
-                fs.writeFileSync(`./thumbnails/${filename}`, buf);
-                return resolve('Successfully generated thumbnail');
-              });
-            }).catch(err => reject(err));
-        }
+          this.logger.info('Calling Image download library');
+          this.downloadImage(options);
+          return resolve('Successfully generated thumbnail');
+        } return reject(new Error('Unsupported image extension type'));
       } return reject(data);
     });
   }

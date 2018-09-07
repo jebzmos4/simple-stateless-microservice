@@ -1,12 +1,12 @@
 Hackerbay User Service API
 ==============================================
 
-The hackerbay User Service API has Endpoints that creates a authenticates a user with JWT and compresses an image to generate a thumbnail.
+The hackerbay User Service API has Endpoints that authenticates a user with JWT and compresses an image to generate a thumbnail.
 ----------
 
 Clone repository and run npm install to setup dependencies
 
-Create a .env file
+Create a `.env` file
 ----------------------------
 Add the parameters below (`add your own values`)
 

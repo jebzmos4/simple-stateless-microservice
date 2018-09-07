@@ -1,17 +1,20 @@
-FROM terragontech/node:6.9
+MAINTAINER Morifeoluwa Jebutu <jebzmos4@gmail.com>
 
-MAINTAINER Terragon Engineering Team <tech@terragonltd.com>
+# Use node v10.8.0
 
-RUN cd /
+FROM node:8.11.3
 
-RUN mkdir -p production/app
+# Copy source code
+COPY . /app
 
-WORKDIR /production/
+# Change working directory
+WORKDIR /app
 
-ADD . /production/
+# Install dependencies
+RUN npm install
 
-EXPOSE 6066
+# Expose API port to the outside
+EXPOSE 4000
 
-RUN npm install && npm cache clean
-
-CMD ["npm","start"]
+# Launch application
+CMD ["npm","run", "start"]

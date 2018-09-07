@@ -28,8 +28,17 @@ class User {
 
   login(req, res) {
     this.logger.info('authenticating user');
-    if (req.params.username && req.params.password) {
-      const data = req.params;
+    const data = req.params;
+    const params = Object.keys(data);
+    for (let i = 0; i < params.length; i += 1) {
+      if (params[i] !== 'username' && params[i] !== 'password') {
+        return Response.failure(res, {
+          message: 'Invalid params passed! only *username* and *password* is allowed',
+          res
+        }, httpStatus.BAD_REQUEST);
+      }
+    }
+    if (data.username && data.password) {
       return this.service.login(data)
         .then((response) => {
           localStorage.setItem('token', response);
