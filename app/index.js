@@ -50,8 +50,8 @@ server.use(requestLogger);
 // setup Routing and Error Event Handling
 UserRoutes(server, serviceLocator);
 
-server.listen(config.port, () => {
-  logger.info(`${server.name} listening at ${server.url}`);
+server.listen(6667, '127.0.0.1', () => {
+  logger.info('%s listening on port %s', config.name, config.server.baseUrl);
 });
 
 module.exports = server;

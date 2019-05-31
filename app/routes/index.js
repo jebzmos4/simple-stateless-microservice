@@ -10,7 +10,7 @@ const routes = function routes(server, serviceLocator) {
     path: '/',
     name: 'base',
     version: '1.0.0'
-  }, (req, res) => res.send('Welcome to HackerBay User Service API'));
+  }, (req, res) => res.send('Welcome to the Gokada ATM Service API'));
 
   /**
    * LOGIN
@@ -21,12 +21,20 @@ const routes = function routes(server, serviceLocator) {
   }, (req, res) => userHandler.login(req, res));
 
   /**
-   * GET ALL USERS
+   * MAKE A WITHDRWAL
    */
   server.post({
-    path: '/image',
-    name: 'Generates a thumbnail',
-  }, (req, res) => userHandler.generateThumbnail(req, res));
+    path: '/withdrawal',
+    name: 'Make Withdrawals',
+  }, (req, res) => userHandler.withdrawal(req, res));
+
+  /**
+   * CREATE USER DATA
+   */
+  server.post({
+    path: '/create',
+    name: 'Create user dara',
+  }, (req, res) => userHandler.create(req, res));
 };
 
 module.exports = routes;

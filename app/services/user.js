@@ -2,78 +2,44 @@
  * Created by Morifeoluwa on 06/09/2018.
  * objective: building to scale
  */
-const jwt = require('jsonwebtoken');
-const path = require('path');
-const fs = require('fs');
-const resizeImg = require('resize-img');
-const download = require('image-downloader');
+const validate = require('uuid-validate');
+const MongoDBHelper = require('../lib/mongoDBHelper');
+const UserModel = require('../models/user.model');
 
-const config = require('../config/settings');
-
-const { key } = config.auth;
 
 class User {
   /**
      *
      * @param {*} logger Logger Object
      */
-  constructor(logger) {
+  constructor(logger, mongoClient) {
     this.logger = logger;
+    this.mongo = new MongoDBHelper(mongoClient, UserModel);
   }
 
   login(data) {
-    return new Promise((resolve, reject) => {
-      this.logger.info('validating param and genarating token');
-      const token = jwt.sign(data, key);
-      if (token) {
-        return resolve(token);
-      }
-      return reject(new Error('error occured while generating token'));
-    });
+    if (data.atmCard && data.pin) {
+      return this.mongo.fetchOne({ cardDetails: data.atmCard });
+    }
+    return false;
   }
 
-  validateToken(token) {
-    this.logger.info('validating token');
-    jwt.verify(token, key, (err, response) => {
-      if (err) {
-        return err;
-      } this.logger.info('Successfully validated user token, user is authorized');
-      return response;
-    });
+  validateWithdrawal(data) {
+    if (validate(data.transactionToken)) {
+      this.logger.info('transaction token valid');
+      return true;
+    } else if (data.amount === '500' || data.amount === '1000') {
+      this.logger.info('valid denomination passed');
+      return true;
+    }
+    this.mongo.getOne();
+    this.logger.info('Invalid transactionToken');
+    return false;
   }
 
-  downloadImage(options) {
-    this.logger.info('Downloading image');
-    download.image(options)
-      .then(({ filename }) => {
-        this.logger.info('File successfully saved as', filename);
-        resizeImg(fs.readFileSync(filename), { width: 50, height: 50 }).then((buf) => {
-          fs.writeFileSync(`./${filename}`, buf);
-          this.logger.info('Successfully generated thumbnail');
-        });
-      }).catch((err) => {
-        this.logger.error('error generating thumbnail', err);
-      });
-  }
-
-  generateThumbnail(token, url) {
-    return new Promise((resolve, reject) => {
-      const data = this.validateToken(token);
-      if (!data || data === undefined) {
-        this.logger.info('Generating thumbnail');
-        const imageExtension = path.extname(url);
-        this.logger.info('image extension gotten is', imageExtension);
-        if (imageExtension === '.bmp' || imageExtension === '.jpg' || imageExtension === '.png') {
-          const options = {
-            url,
-            dest: './thumbnails'
-          };
-          this.logger.info('Calling Image download library');
-          this.downloadImage(options);
-          return resolve('Successfully generated thumbnail');
-        } return reject(new Error('Unsupported image extension type'));
-      } return reject(data);
-    });
+  create(data) {
+    this.logger.info('inserting record into DB');
+    return this.mongo.save(data);
   }
 }
 
